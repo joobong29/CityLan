@@ -76,21 +76,48 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="알림 소리 조절"
+                    android:text="경보 유효 거리"
                     android:textStyle="bold"
                     android:textColor="@color/white"
                     android:textSize="28dp" />
 
-                <SeekBar
-                    android:id="@+id/sb_sound"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30sp"
-                    android:layout_marginTop="10dp"
-                    android:progressTint="@color/purple_2"
-                    android:scaleX="1.5"
-                    android:scaleY="1.5" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:layout_marginLeft="5dp"
+                            android:scaleY="1.5"
+                            android:scaleX="1.5"
+                            android:textStyle="bold"
+                            android:textColor="@color/purple_2"
+                            android:text="1M"/>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleY="1.5"
+                            android:scaleX="1.5"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="35dp"
+                            android:textColor="@color/purple_2"
+                            android:text="3M"/>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleY="1.5"
+                            android:scaleX="1.5"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="35dp"
+                            android:textColor="@color/purple_2"
+                            android:text="5M"/>
+                    </RadioGroup>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -120,7 +147,7 @@
                 android:textSize="28dp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:text="자동 추적 켜기"/>
+                android:text="자동 추적 설정"/>
             <Switch
                 android:id="@+id/sw_find"
                 android:layout_width="wrap_content"
@@ -154,7 +181,7 @@
                 android:textSize="28dp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                android:text="가방 진동 켜기"/>
+                android:text="가방 경보 설정"/>
             <Switch
                 android:id="@+id/sw_vib"
                 android:layout_width="wrap_content"
