@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/notirogo"/>
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="가방과 연결되었습니다."
+        android:layout_marginTop="20sp"
+        android:textColor="#000000"
+        android:textSize="15sp"/>
+    <ImageButton
+        android:id="@+id/ntBtn_vib"
+        android:layout_margin="10dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_noti_vibration_24"/>
+    <ImageButton
+        android:id="@+id/ntBtn_sound"
+        android:layout_marginLeft="10dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_noti_campaign_24"/>
+
+
+</LinearLayout>
