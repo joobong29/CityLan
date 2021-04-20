@@ -32,6 +32,4 @@
         android:background="@android:color/transparent"
         android:layout_gravity="center_vertical"
         android:src="@drawable/ic_noti_campaign_24"/>
-
-
 </LinearLayout>
