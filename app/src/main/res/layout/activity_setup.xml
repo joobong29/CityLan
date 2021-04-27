@@ -30,14 +30,15 @@
                 android:textSize="28dp"
                 android:textStyle="bold"
                 android:textColor="#ffffff"
-                android:text="알림창 켜기"/>
+                android:text="연결 알림 설정"/>
             <Switch
                 android:id="@+id/sw_noti"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleY="1.5"
                 android:scaleX="1.5"
-                android:layout_marginLeft="55dp"/>
+                android:checked="true"
+                android:layout_marginLeft="20dp"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -58,12 +59,11 @@
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
                 android:gravity="center">
-
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:src="@drawable/ic_baseline_campaign_24" />
+                    android:src="@drawable/ic_baseline_track_changes_24" />
             </LinearLayout>
 
             <LinearLayout
@@ -76,7 +76,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="경보 유효 거리"
+                    android:text="경보 유효 거리 설정"
                     android:textStyle="bold"
                     android:textColor="@color/white"
                     android:textSize="28dp" />
@@ -85,33 +85,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <RadioGroup
+                        android:id="@+id/rGroup"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
                         <RadioButton
+                            android:id="@+id/oneMeter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
                             android:layout_marginLeft="5dp"
-                            android:scaleY="1.5"
-                            android:scaleX="1.5"
+                            android:scaleY="1.4"
+                            android:scaleX="1.4"
                             android:textStyle="bold"
                             android:textColor="@color/purple_2"
                             android:text="1M"/>
                         <RadioButton
+                            android:id="@+id/threeMeter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:scaleY="1.5"
-                            android:scaleX="1.5"
+                            android:scaleY="1.4"
+                            android:scaleX="1.4"
                             android:textStyle="bold"
                             android:layout_marginLeft="35dp"
                             android:textColor="@color/purple_2"
                             android:text="3M"/>
                         <RadioButton
+                            android:id="@+id/fiveMeter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:scaleY="1.5"
-                            android:scaleX="1.5"
+                            android:scaleY="1.4"
+                            android:scaleX="1.4"
                             android:textStyle="bold"
                             android:layout_marginLeft="35dp"
                             android:textColor="@color/purple_2"
@@ -188,6 +192,7 @@
                 android:layout_height="wrap_content"
                 android:scaleY="1.5"
                 android:scaleX="1.5"
+                android:checked="true"
                 android:layout_marginLeft="20dp"/>
         </LinearLayout>
     </LinearLayout>

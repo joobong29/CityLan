@@ -23,8 +23,6 @@ public class Foreground extends Service {
     public void onCreate() {
         super.onCreate();
         startForegroundService();
-
-
     }
 
     @Override
@@ -48,34 +46,30 @@ public class Foreground extends Service {
         PendingIntent pIntent=PendingIntent.getActivity(this, 0, notiIntent,0);
         RemoteViews remoteViews=new RemoteViews(getPackageName(),R.layout.notification);
         NotificationCompat.Builder builder;
-        if(Build.VERSION.SDK_INT >= 26) {
-            String channelID="notiServiceChannel";
-            NotificationChannel channel = new NotificationChannel(channelID,
+        if(Build.VERSION.SDK_INT >= 26) { // 26버전 이상이면 채널값 필요
+            String channelID1="notiServiceChannel";
+            String channelID2="notiServiceChannel2";
+            NotificationChannel channel = new NotificationChannel(channelID1,
                     "알림채널", NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("채널정의");
-            channel.enableVibration(true);
-            channel.setVibrationPattern(new long[] {100,0,0,0});
             channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 
             ((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).
                     createNotificationChannel(channel);
-            builder=new NotificationCompat.Builder(this,channelID);
+            builder=new NotificationCompat.Builder(this,channelID1);
         }else {
             builder=new NotificationCompat.Builder(this);
         }
         builder.setSmallIcon(R.drawable.notirogo)
-                .setContent(remoteViews)
+                .setContent(remoteViews)  //노티에 셋팅
                 .setContentIntent(pIntent)
-                .setVibrate(new long[] {100,0,0,0})
+                //.setVibrate(new long[] {100,0,0,0})
                 //.addAction(R.id.ntBtn_sound,"소리알림",pIntent)
-                .addAction(R.id.ntBtn_vib,"진동알람",pIntent)
+                //.addAction(R.id.ntBtn_vib,"진동알람",pIntent)
                 .setAutoCancel(true);
         startForeground(1,builder.build());
 
     }
 
-    //토스트 메서드
-    void showToast(String msg) {
-        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-    }
+
 }
