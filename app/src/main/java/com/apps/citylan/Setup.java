@@ -24,8 +24,8 @@ public class Setup extends AppCompatActivity {
     Switch sw_noti, sw_find, sw_vib;
 
     public static Context context_setup;
-    public boolean setNoti=true;
-    public String open;
+    //public boolean setNoti=true;
+    //public String open;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,7 +49,6 @@ public class Setup extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if(isChecked == true) {
-                    setNoti=true;
                     if(Build.VERSION.SDK_INT>=26) {
                         startForegroundService(intent);
                     }else {
@@ -57,7 +56,6 @@ public class Setup extends AppCompatActivity {
                     }
                 }else {
                     stopService(intent);
-                    setNoti=false;
                 }
             }
         });
@@ -92,6 +90,7 @@ public class Setup extends AppCompatActivity {
         sw_vib.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+
                 if(isChecked == true) {
                     if(Build.VERSION.SDK_INT>=26) {
                         startForegroundService(intent);

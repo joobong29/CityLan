@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     char charDelimiter='\n';
     byte readBuffer[];
     int readBufferPosition;
+    double lat, lan;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +96,14 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,Map.class);
+                beginListenForDate();
+                Intent intent = new Intent(getApplicationContext(),Map.class);
+                intent.putExtra("lat",lat);
+                intent.putExtra("lan",lan);
+
+                Log.i("test","lat : "+lat);
+                Log.i("test","lan : "+lan);
+
                 startActivity(intent);
             }
         });
@@ -228,12 +237,15 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                 if (b==charDelimiter){ //데이터 끝 신호를 받았을 때
                                     byte[] encodeBytes=new byte[readBufferPosition];
                                     System.arraycopy(readBuffer,0,encodeBytes,0,encodeBytes.length);
-                                    final String data=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
+                                    final String latData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
+                                    final String lanData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     readBufferPosition=0;
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             //data변수에 수신된 문자열에 대한 처리작업
+                                            lat = Integer.parseInt(latData);
+                                            lan = Integer.parseInt(lanData);
 
                                         }
                                     });
