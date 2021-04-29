@@ -244,8 +244,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                         @Override
                                         public void run() {
                                             //data변수에 수신된 문자열에 대한 처리작업
-                                            lat = Integer.parseInt(latData);
-                                            lan = Integer.parseInt(lanData);
+                                            lat = Double.parseDouble(latData);
+                                            lan = Double.parseDouble(lanData);
 
                                         }
                                     });
