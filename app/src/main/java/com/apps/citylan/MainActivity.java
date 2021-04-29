@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         }
     }
 
-    //(6)앱에 결과화면 출력 메서드
+    //앱에 결과화면 출력 메서드
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

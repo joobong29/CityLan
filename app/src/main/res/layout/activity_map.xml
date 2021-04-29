@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     tools:context=".Map">
 
     <fragment
@@ -12,25 +12,41 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/generalMap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="일반지도"/>
-        <Button
-            android:id="@+id/satelliteMap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="위성지도"/>
+        android:layout_weight="1" />
 
+    <Button
+        android:id="@+id/btnMode"
+        android:layout_margin="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="일반"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imgLocation"
+        android:layout_width="80dp"
+        android:layout_height="120dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/target" />
+
+    <LinearLayout
+        android:id="@+id/lySign"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="200dp"
+        android:background="#D5D5D5"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="20sp" />
     </LinearLayout>
 
-
-</LinearLayout>
+</FrameLayout>
