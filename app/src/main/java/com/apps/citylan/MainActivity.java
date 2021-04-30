@@ -7,9 +7,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -37,10 +39,10 @@ import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity implements AutoPermissionsListener {
+    public static Context context_main;
     ImageView ivPower;
     TextView tvPowerText;
     Button btn_conn, btn_map, btn_setup;
-    boolean i=true;  //연결 버튼 상태 변수
     BluetoothAdapter bluetoothAdapter; //블루투스 관련 기능 지원
     int pairedDeviceCount=0; //페어링된 장치 수를 나타낼 변수
     Set<BluetoothDevice> devices; //디바이스 목록을 담을 클래스 객체
@@ -50,10 +52,13 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     InputStream inputStream=null; //신호를 받음
     Thread workerThread=null; //보낼 때 받을 수 있는 동시 수행 작업 용
     String strDelimiter="\n"; //마지막에 줄바꿈 신호를 보내서 데이터가 끝나는 것을 알림
+    public static boolean i=true;  //연결 버튼 상태 변수
+    public static String bag; //가방 열림 신호 받을 변수
     char charDelimiter='\n';
     byte readBuffer[];
     int readBufferPosition;
     double lat, lan;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         btn_conn=findViewById(R.id.btn_conn);
         btn_map=findViewById(R.id.btn_map);
         btn_setup=findViewById(R.id.btn_setup);
+        context_main = this;
 
         ActionBar bar = getSupportActionBar();//액션바 숨기기
         bar.hide();
@@ -85,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                         inputStream.close();
                         outputStream.close();
                         bluetoothSocket.close();
+                        Intent intent=new Intent(MainActivity.this,Foreground.class);
+                        stopService(intent);
                     }catch (Exception e) {
                         showToast("앱 종료 중 에러 발생");
                     }
@@ -200,18 +208,23 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         remotedevice=getDeviceFromBoundList(selectedDeviceName);//
         UUID uuid=UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
         try { //소켓이 연결된 경우
-            Intent intent=new Intent(MainActivity.this,Foreground.class);
-            startService(intent);
+            i=false;
             bluetoothSocket=remotedevice.createRfcommSocketToServiceRecord(uuid);
             bluetoothSocket.connect();//기기와 연결 완료
             ivPower.setImageResource(R.drawable.poweron); //연결 완료 시 이미지 변경
             tvPowerText.setText("연결됨");  //연결 완료 시 텍스트뷰 변경
             showToast("연결완료"); //연결 완료 시 토스트로 알림
+            Intent intent=new Intent(MainActivity.this,Foreground.class);
+            if(Build.VERSION.SDK_INT>=26) {
+                startForegroundService(intent);
+            }else {
+                startService(intent);
+            }
             outputStream=bluetoothSocket.getOutputStream();
             inputStream=bluetoothSocket.getInputStream();
             btn_conn.setText("연결 해제");
             beginListenForDate();
-            i=false;
+
         }catch (Exception e){ //소켓이 연결 안될 경우
             showToast("소켓 연결이 되지 않습니다.");
         }
@@ -239,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                     System.arraycopy(readBuffer,0,encodeBytes,0,encodeBytes.length);
                                     final String latData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     final String lanData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
+                                    //final String openbag=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     readBufferPosition=0;
                                     handler.post(new Runnable() {
                                         @Override
@@ -246,7 +260,16 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                             //data변수에 수신된 문자열에 대한 처리작업
                                             lat = Double.parseDouble(latData);
                                             lan = Double.parseDouble(lanData);
-
+                                            Log.i("테스트중","jbjb : " + latData +""+ lanData);
+                                            //bag = openbag;
+                                            /*if (bag!=null) {
+                                                Intent intent=new Intent(MainActivity.this,Foreground.class);
+                                                if(Build.VERSION.SDK_INT>=26) {
+                                                    startForegroundService(intent);
+                                                }else {
+                                                    startService(intent);
+                                                }
+                                            }*/
                                         }
                                     });
                                 }else { //데이터 끝 신호가 안왔을 때

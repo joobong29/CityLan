@@ -24,8 +24,11 @@ public class Setup extends AppCompatActivity {
     Switch sw_noti, sw_find, sw_vib;
 
     public static Context context_setup;
-    //public boolean setNoti=true;
-    //public String open;
+    public static boolean setNoti1=true;
+    public static boolean setNoti2=true;
+
+    boolean btOn=((MainActivity)MainActivity.context_main).i;
+    String bag=((MainActivity)MainActivity.context_main).bag;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,16 +48,25 @@ public class Setup extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         Intent intent=new Intent(Setup.this,Foreground.class);
         //연결알림설정
+        if (btOn==false){
+            sw_noti.setEnabled(true);
+            sw_vib.setEnabled(true);
+        }else {
+            sw_noti.setEnabled(false);
+            sw_vib.setEnabled(false);
+        }
         sw_noti.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if(isChecked == true) {
+                    setNoti1=true;
                     if(Build.VERSION.SDK_INT>=26) {
                         startForegroundService(intent);
                     }else {
                         startService(intent);
                     }
                 }else {
+                    setNoti1=false;
                     stopService(intent);
                 }
             }
@@ -90,15 +102,14 @@ public class Setup extends AppCompatActivity {
         sw_vib.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-
+                //가방 열림 신호를 받았을 때 = 노티가 동작하는 중일 때
                 if(isChecked == true) {
-                    if(Build.VERSION.SDK_INT>=26) {
-                        startForegroundService(intent);
-                    }else {
-                        startService(intent);
+                    setNoti2=true;
+                }else {
+                    setNoti2=false;
+                    if (btOn=false) {
+                        stopService(intent);
                     }
-                }else if(isChecked == false) {
-                    stopService(intent);
                 }
             }
         });

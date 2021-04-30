@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
@@ -26,15 +27,23 @@ public class Foreground extends Service {
     String channelID2="notiServiceChannel2";
     String getChannelName2="notiServiceChannel2";
     //Vibrator vib = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+    //boolean setupnoti1 = ((Setup)Setup.context_setup).setNoti1; //Setup 액티비티에서 setNoti1 변수 값 가져오기
+    //boolean setupnoti2=((Setup)Setup.context_setup).setNoti2; //Setup 액티비티에서 setNoti2 변수 값 가져오기
 
-    //boolean setupnoti=((Setup)Setup.context_setup).setNoti; //Setup 액티비티에서 setNoti 변수 값 가져오기
+    String bagOpen=((MainActivity)MainActivity.context_main).bag;  //MainActivity의 아두이노에서 받은 신호 값을 가진 변수
+    boolean btOn=((MainActivity)MainActivity.context_main).i;  //MainActivity의 블루투스 연결 상태 값을 가진 변수
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         startForegroundService1();
-        startForegroundService2();
+        Log.i("테스트중","result : "+btOn);
+        if (btOn=false) {  //false가 연결 된 상태.
+            startForegroundService1();
+        }
+        if (bagOpen!=null) {
+            startForegroundService2();
+        }
     }
 
     @Override
@@ -55,7 +64,7 @@ public class Foreground extends Service {
 
     void startForegroundService1() {
         Intent notiIntent=new Intent(this,MainActivity.class);
-        PendingIntent pIntent=PendingIntent.getActivity(this, 0, notiIntent,0);
+        PendingIntent pIntent=PendingIntent.getActivity(this, 1, notiIntent,0);
         RemoteViews remoteViews=new RemoteViews(getPackageName(),R.layout.notification);
         NotificationCompat.Builder builder;
         if(Build.VERSION.SDK_INT >= 26) { // 26버전 이상이면 채널값 필요
@@ -98,13 +107,12 @@ public class Foreground extends Service {
             builder=new NotificationCompat.Builder(this);
         }
         builder.setSmallIcon(R.drawable.ic_noti_warning)
-                .setContentTitle("경고") //노티에 셋팅
+                .setContentTitle("경고")
                 .setContentIntent(pIntent)
                 .setVibrate(new long[] {100,0,100,0})
-                .setDefaults(Notification.DEFAULT_SOUND) //소리 알람
                 .setDefaults(Notification.DEFAULT_VIBRATE) //진동 알람
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(false);
+                .setAutoCancel(true);
 
     }
 }
