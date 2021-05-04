@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     byte readBuffer[];
     int readBufferPosition;
     double lat, lan;
+    boolean dataZero=false;  //데이터를 수신했다는 것을 판별하기 위한 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                 }
             }
         });
-
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                 startActivity(intent);
             }
         });
-
         btn_setup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -202,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             dlg.show();
         }
     }
-
     //선택한 블루투스 장치와 연결 메서드
     void connectToSelectedDevice(String selectedDeviceName) {
         remotedevice=getDeviceFromBoundList(selectedDeviceName);//
@@ -227,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
         }catch (Exception e){ //소켓이 연결 안될 경우
             showToast("소켓 연결이 되지 않습니다.");
+
         }
     }
 
@@ -243,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                     try {
                         int bytesAvailable=inputStream.available(); //수신 데이터 확인
                         if (bytesAvailable > 0) { //아두이노에서 신호를 보냈음
+                            Log.i("테스트중","데이터 들어왔는지 : " + bytesAvailable);
                             byte[] packetBytes=new byte[bytesAvailable];
                             inputStream.read(packetBytes);
                             for (int i=0; i<bytesAvailable; i++) { //받은 데이터만큼 처리
@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                     final String latData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     final String lanData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     //final String openbag=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
+                                    Log.i("테스트중","GPS값1 : " + latData +""+ lanData);
                                     readBufferPosition=0;
                                     handler.post(new Runnable() {
                                         @Override
@@ -260,7 +261,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                             //data변수에 수신된 문자열에 대한 처리작업
                                             lat = Double.parseDouble(latData);
                                             lan = Double.parseDouble(lanData);
-                                            Log.i("테스트중","jbjb : " + latData +""+ lanData);
+                                            Log.i("테스트중","GPS값2 : " + latData +""+ lanData);
+                                            dataZero=true;
                                             //bag = openbag;
                                             /*if (bag!=null) {
                                                 Intent intent=new Intent(MainActivity.this,Foreground.class);
@@ -274,14 +276,24 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                     });
                                 }else { //데이터 끝 신호가 안왔을 때
                                     readBuffer[readBufferPosition++]=b; //버퍼 값을 쌓음
+                                    Log.i("테스트중","신호 끊김 찾는 중1");
                                 }
                             }
+
                         }
+
                     }catch (IOException e) {
+                        Log.i("테스트중","신호 끊김 찾는 중2");
                         showToast("데이터 수신 중 오류가 발생했습니다.");
                     }
+                    /*if(dataZero==true && bytesAvailable==0) {
+                        //Log.i("테스트중","신호끊김 테스트 :  여기서 끊어라 제발");
+                        dataZero=false;
+                    }*/
                 }
+
             }
+
         });
         workerThread.start();
     }
