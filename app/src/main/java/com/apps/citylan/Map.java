@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,6 +32,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 
+import static com.apps.citylan.MainActivity.context_main;
+
 public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPermissionsListener {
 
     private GoogleMap mMap;
@@ -41,7 +44,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
 
     Double myLatlng[] = new Double[2]; // 내위치 위도 경도
     Double bagLatlng[] = new Double[2]; // 가방위치 위도 경도
-    double bagLat, bagLan;
+    double bagLat, bagLng;
+    double myLat, myLng;
+    int meter; //거리 차이 계산 변수
     ArrayAdapter<String> adapter;
 
     boolean click = true;
@@ -63,9 +68,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
 
         AutoPermissions.Companion.loadAllPermissions(this, 100);
 
-        Intent gintent = getIntent();
-        bagLat=gintent.getDoubleExtra("lat",0);
-        bagLan=gintent.getDoubleExtra("lan",0);
+        //Intent gintent = getIntent();
+        bagLat=37.350305;
+        bagLng=127.110089;
+
+        //bagLat=37.394108;
+        //bagLng=127.240719;
 
         //버튼 클릭(위성, 일반)
         btnMode.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +95,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
         bar.setTitle("위치추적");
         bar.setDisplayHomeAsUpEnabled(true);
 
+
         //내위치 버튼(이미지) 클릭시
         imgLocation.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -103,10 +112,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
                 return true;
             }
         });
-
+        setMylocation();
+        setBaglocation();
         //거리 계산
-
-        calculatedDistance(35, 125, 37.8248498, 127.5149412);
+        calculatedDistance(myLat, myLng, bagLat, bagLng);
         mapFragment.getMapAsync(this);
 
     }//END_onCreate()
@@ -116,8 +125,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        setMylocation();
-        setBaglocation();
+        boolean find = PreferenceManager.getBoolean(context_main, "find");
+
+
 
         if (myLocation != null) {
             Log.i("테스트중", "onMapReady location : " + myLatlng[0]);
@@ -125,15 +135,19 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
         } else {
             showToast("내 위치 찾는 중..");
         }
+        if (find == true){
+            if (bagLocation != null) {
+                bagMove(bagLatlng);
+                Log.i("테스트중", "find : " + find);
+                Log.i("테스트중", "bagLocation : " + bagLocation);
+            } else {
+                showToast("가방 위치 찾는 중");
+            }
+        }else {
 
-        if(bagLocation != null){
-            bagMove(bagLatlng);
-        }else{
-            showToast("가방 위치 찾는 중");
         }
 
         tourMove(myLatlng);
-        bagMove(bagLatlng);
     }
 
     //토스트 메서드
@@ -153,8 +167,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
                 myLatlng[0] = myLocation.getLatitude();
                 myLatlng[1] = myLocation.getLongitude();
 
+                myLat = myLatlng[0];
+                myLng = myLatlng[1];
+
                 Log.i("테스트중", " myLatlng[0] : " + myLocation.getLatitude());
                 Log.i("테스트중", " myLatlng[1] : " + myLocation.getLongitude());
+                Log.i("테스트중" , "myLat : " + myLat);
+                Log.i("테스트중" , "myLng : " + myLng);
 
             } else {
                 showToast("내위치 찾는 중");
@@ -177,14 +196,15 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
 
             Log.i("테스트중", "setBaglocation() before : " + bagLocation);
             if (bagLocation != null) {
-                bagLatlng[0] = bagLat;  bagLatlng[1] = bagLan;
-                //bagLatlng[0] = 37.8248498;  bagLatlng[1] = 127.5149412;
+                bagLatlng[0] = bagLat;  bagLatlng[1] = bagLng;
+                Log.i("테스트중", "bagLat : " + bagLat);
+                Log.i("테스트중", "bagLan : " + bagLng);
             } else {
                 showToast("내위치 찾는 중");
             }
-            //10초마다 1m마다 내위치 변경하는 것을 찾음
+            //5초마다 1m마다 내위치 변경하는 것을 찾음
             MyListner myListner = new MyListner();
-            bagManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10000,
+            bagManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000,
                     1, myListner);
         } catch (SecurityException e) {
             showToast("내 위치를 찾을 수 없습니다.");
@@ -202,7 +222,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
     void tourMove(Double latlngLocation[]) {
 
         LatLng seoule = new LatLng(latlngLocation[0], latlngLocation[1]);
-        //mMap.addMarker(new MarkerOptions().position(seoule).title("관광지 위치"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoule, 15));
         MarkerOptions markerOpt = new MarkerOptions();
         markerOpt.position(seoule);
@@ -215,15 +234,15 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
     }
     void bagMove(Double latlngLocation[]){
         LatLng bag = new LatLng(latlngLocation[0], latlngLocation[1]);
-        //mMap.addMarker(new MarkerOptions().position(seoule).title("관광지 위치"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bag, 15));
         MarkerOptions markerOpt = new MarkerOptions();
         markerOpt.position(bag);
+        if(((Setup)Setup.context_setup).setbag == true) {
+            markerOpt.title("가방위치");
+            markerOpt.snippet("현재 가방의 위치입니다");
+            mMap.addMarker(markerOpt).showInfoWindow();
+        }
 
-        markerOpt.title("가방위치");
-        markerOpt.snippet("현재 가방의 위치입니다");
-
-        mMap.addMarker(markerOpt).showInfoWindow();
     }
 
     //거부했을 떄
@@ -242,9 +261,23 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
 
         @Override
         public void onLocationChanged(@NonNull Location location) {
-            //위치변동시
+            //위치변동 시
             myLatlng[0] = location.getLatitude();
             myLatlng[1] = location.getLongitude();
+            myLat = myLatlng[0];
+            myLng = myLatlng[1];
+            calculatedDistance(myLat, myLng, bagLat, bagLng);
+            Log.i("테스트중" , "위치계산 값 :" + myLat+","+myLng+","+bagLat+","+bagLng);
+            if(meter >15 ) {
+                PreferenceManager.setBoolean(context_main, "bagCheck", true);
+                Intent intent = new Intent(Map.this, Foreground.class);
+                if(Build.VERSION.SDK_INT>=26) {
+                    startForegroundService(intent);
+                }else {
+                    startService(intent);
+                }
+            }
+
         }
 
         @Override
@@ -270,30 +303,36 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback, AutoPe
 
         @Override
         public void onProviderDisabled(@NonNull String provider) {
-            //위치정보 껐을떄
+            //위치정보 껐을때
             showToast("현재 서비스 사용 불가능 상태");
         }
     }
 
     // 거리측정 메서드
-    public void calculatedDistance(double myLat, double myLng, double tLat, double tLng) {
-        double distance;
+    public double calculatedDistance(double myLat, double myLng, double bagLat, double bagLng) {
+        Log.i("테스트중" ,"거리계산"+myLat+","+myLng+","+bagLat+","+bagLng);
+        double distance=0;
         String sDistance;
         Location locationA = new Location("point A");
         locationA.setLatitude(myLat);
         locationA.setLongitude(myLng);
 
         Location locationB = new Location("point B");
-        locationB.setLatitude(tLat);
-        locationB.setLongitude(tLng);
+        locationB.setLatitude(bagLat);
+        locationB.setLongitude(bagLng);
 
         distance = locationA.distanceTo(locationB);
         Log.i("테스트중", "distance : " + distance);
         sDistance = String.valueOf(distance);
+        Log.i("테스트중", "distance : " + sDistance);
+        meter = Integer.parseInt(String.valueOf(Math.round(distance)));
+        Log.i("테스트중", "meter :" + meter);
 
         lySign.setVisibility(View.VISIBLE);
-        tvDistance.setText("가방과의 거리 :" + sDistance);
+        tvDistance.setText("가방과의 거리 :" + sDistance +"M");
         Toast.makeText(getApplicationContext(), sDistance, Toast.LENGTH_SHORT).show();
+
+        return distance;
     }
 
     //(액션바)뒤로가기

@@ -68,6 +68,7 @@
             android:shadowDx="1"
             android:shadowDy="0"
             android:shadowRadius="1"
+            android:enabled="false"
             />
         <Button
             android:id="@+id/btn_setup"
@@ -86,6 +87,7 @@
             android:shadowDx="1"
             android:shadowDy="0"
             android:shadowRadius="1"
+            android:enabled="false"
             />
     </LinearLayout>
 

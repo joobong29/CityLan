@@ -38,7 +38,6 @@
                 android:scaleY="1.5"
                 android:scaleX="1.5"
                 android:checked="true"
-                android:enabled="false"
                 android:layout_marginLeft="20dp"/>
         </LinearLayout>
     </LinearLayout>
@@ -72,57 +71,23 @@
                 android:layout_height="match_parent"
                 android:paddingLeft="10dp"
                 android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="경보 유효 거리 설정"
+                    android:text="거리 경보 설정"
                     android:textStyle="bold"
                     android:textColor="@color/white"
                     android:textSize="28dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <RadioGroup
-                        android:id="@+id/rGroup"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-                        <RadioButton
-                            android:id="@+id/oneMeter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checked="true"
-                            android:layout_marginLeft="5dp"
-                            android:scaleY="1.4"
-                            android:scaleX="1.4"
-                            android:textStyle="bold"
-                            android:textColor="@color/purple_2"
-                            android:text="1M"/>
-                        <RadioButton
-                            android:id="@+id/threeMeter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:scaleY="1.4"
-                            android:scaleX="1.4"
-                            android:textStyle="bold"
-                            android:layout_marginLeft="35dp"
-                            android:textColor="@color/purple_2"
-                            android:text="3M"/>
-                        <RadioButton
-                            android:id="@+id/fiveMeter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:scaleY="1.4"
-                            android:scaleX="1.4"
-                            android:textStyle="bold"
-                            android:layout_marginLeft="35dp"
-                            android:textColor="@color/purple_2"
-                            android:text="5M"/>
-                    </RadioGroup>
-                </LinearLayout>
+                <Switch
+                    android:id="@+id/sw_siren"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleY="1.5"
+                    android:scaleX="1.5"
+                    android:checked="true"
+                    android:layout_marginLeft="20dp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -159,7 +124,8 @@
                 android:layout_height="wrap_content"
                 android:scaleY="1.5"
                 android:scaleX="1.5"
-                android:layout_marginLeft="20dp"/>
+                android:checked="true"
+                android:layout_marginLeft="30dp"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -186,14 +152,13 @@
                 android:textSize="28dp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                android:text="가방 경보 설정"/>
+                android:text="열림 경보 설정"/>
             <Switch
                 android:id="@+id/sw_vib"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleY="1.5"
                 android:scaleX="1.5"
-                android:enabled="false"
                 android:checked="true"
                 android:layout_marginLeft="20dp"/>
         </LinearLayout>

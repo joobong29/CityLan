@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     Thread workerThread=null; //보낼 때 받을 수 있는 동시 수행 작업 용
     String strDelimiter="\n"; //마지막에 줄바꿈 신호를 보내서 데이터가 끝나는 것을 알림
     public static boolean i=true;  //연결 버튼 상태 변수
-    public static String bag; //가방 열림 신호 받을 변수
+    public static boolean bag=false; //가방 열림 신호 받을 변수
     char charDelimiter='\n';
     byte readBuffer[];
     int readBufferPosition;
@@ -71,6 +71,12 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         btn_setup=findViewById(R.id.btn_setup);
         context_main = this;
 
+        PreferenceManager.setBoolean(context_main, "noti", true);
+        PreferenceManager.setBoolean(context_main, "siran", true);
+        PreferenceManager.setBoolean(context_main, "find", true);
+        PreferenceManager.setBoolean(context_main, "vib", true);
+        PreferenceManager.setBoolean(context_main, "dataZero", false);
+        PreferenceManager.setBoolean(context_main, "bagCheck", false);
         ActionBar bar = getSupportActionBar();//액션바 숨기기
         bar.hide();
 
@@ -79,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         btn_conn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if(i == true) {
                     checkBluetooth();
                 }else {
@@ -87,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                     btn_conn.setText("기기연결");
                     tvPowerText.setText("연결되지 않음");
                     showToast("연결해제");
+                    btn_setup.setEnabled(false);
+                    btn_map.setEnabled(false);
                     try {
                         workerThread.interrupt(); //스레드 중단
                         inputStream.close();
@@ -192,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                     if(which==pairedDeviceCount){ //페어링 목록 선택 안하고 취소 선택 시
                         showToast("취소를 선택했습니다.");
                     }else { //페어링 목록에서 선택 시
-                        connectToSelectedDevice(items[which].toString());//
+                        connectToSelectedDevice(items[which].toString());
                     }
                 }
             });
@@ -221,11 +228,13 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             outputStream=bluetoothSocket.getOutputStream();
             inputStream=bluetoothSocket.getInputStream();
             btn_conn.setText("연결 해제");
+            btn_setup.setEnabled(true);
+            btn_map.setEnabled(true);
             beginListenForDate();
+
 
         }catch (Exception e){ //소켓이 연결 안될 경우
             showToast("소켓 연결이 되지 않습니다.");
-
         }
     }
 
@@ -253,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                     final String latData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     final String lanData=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
                                     //final String openbag=new String(encodeBytes,"US-ASCII"); //data는 아두이노에서 받은 데이터를 담은 변수
-                                    Log.i("테스트중","GPS값1 : " + latData +""+ lanData);
+                                    //Log.i("테스트중","GPS값1 : " + latData +""+ lanData);
                                     readBufferPosition=0;
                                     handler.post(new Runnable() {
                                         @Override
@@ -261,8 +270,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                                             //data변수에 수신된 문자열에 대한 처리작업
                                             lat = Double.parseDouble(latData);
                                             lan = Double.parseDouble(lanData);
-                                            Log.i("테스트중","GPS값2 : " + latData +""+ lanData);
-                                            dataZero=true;
+                                            //Log.i("테스트중","GPS값2 : " + latData +""+ lanData);
+                                            dataZero=true; //가방에서 신호가 왔을 때 true
                                             //bag = openbag;
                                             /*if (bag!=null) {
                                                 Intent intent=new Intent(MainActivity.this,Foreground.class);
@@ -286,10 +295,19 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                         Log.i("테스트중","신호 끊김 찾는 중2");
                         showToast("데이터 수신 중 오류가 발생했습니다.");
                     }
-                    /*if(dataZero==true && bytesAvailable==0) {
-                        //Log.i("테스트중","신호끊김 테스트 :  여기서 끊어라 제발");
+
+                }
+                if(bag==false){
+                    if(dataZero==true) {
+                        bag=true; //가방에서 신호가 왔을 때
+                        Intent intent = new Intent(MainActivity.this,Foreground.class);
+                        if(Build.VERSION.SDK_INT>=26) {
+                            startForegroundService(intent);
+                        }else {
+                            startService(intent);
+                        }
                         dataZero=false;
-                    }*/
+                    }
                 }
 
             }
@@ -318,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             outputStream.write(msg.getBytes()); //문자열 전송
         }catch (Exception e) {
             showToast("문자열 전송 도중에 오류가 발생했습니다.");
+
         }
     }
 
